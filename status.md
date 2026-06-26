@@ -196,7 +196,7 @@ Validated interpreters:
 
 Repros and results:
 
-- `ffi-missing-library/`: current issue on TruffleRuby 33.0.1 and 34.0.0. `FFI::DynamicLibrary.open` on a missing `.so` raises `RuntimeError`, while the CRuby 3.4.8 control raises `LoadError`.
+- `ffi-missing-library/`: current issue on TruffleRuby 33.0.1 and 34.0.0. `FFI::DynamicLibrary.open` on a missing `.so` raises `RuntimeError`, while the CRuby 3.4.8 control raises `LoadError`. Filed upstream as `truffleruby/truffleruby#4345`: https://github.com/truffleruby/truffleruby/issues/4345
 - `ffi-struct-by-value/`: known current issue on TruffleRuby 33.0.1 and 34.0.0. Attaching a tiny C function returning a struct by value fails with `Polyglot::ForeignException: unknown simple type 'STRUCT_BY_VALUE'`. CRuby 3.4.8 returns the expected struct values. This remains a duplicate/evidence item for upstream `#3835`, not a new issue.
 - `bundled-gems-file-path-nil/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. Normal `require "citrus"` and `require "parslet"` succeed. A direct internal probe of `Gem::BUNDLED_GEMS.warning?(nil)` raises `TypeError` on both TruffleRuby and CRuby, so that direct call is context only and not a reportable normal-require failure.
 - `appraisal2-dsl-generation/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. The skipped Bundler DSL generation shape matches expected output; CRuby 3.4.8 control also passes.
@@ -204,11 +204,11 @@ Repros and results:
 
 Current validated classification:
 
-- Current issue candidate for a new report: FFI missing shared-library exception shape (`RuntimeError` vs `LoadError`).
+- Current filed issue: FFI missing shared-library exception shape (`RuntimeError` vs `LoadError`), tracked as `truffleruby/truffleruby#4345`.
 - Current known duplicate/evidence only: FFI struct-by-value (`STRUCT_BY_VALUE`, upstream `#3835`).
 - Not active in validated supported versions: bundled-gems normal require TypeError, Appraisal2 DSL generation skip, Appraisal2 Bundler lock skip.
 - Still not revisited: EOL-only `stone_checksums` and `kettle-dev` skips, plus native extension capability exclusions that were comments/policy rather than concrete failures.
 
 ## Current conclusion
 
-There is one confirmed current upstream match: TruffleRuby FFI struct-by-value support (`#3835`). The validation pass also confirms one current issue candidate for review before filing: `FFI::DynamicLibrary.open` raises `RuntimeError` instead of `LoadError` for a missing shared library on supported TruffleRuby versions available locally. The bundled-gems TypeError and Appraisal2 skips did not reproduce as active issues in the supported versions tested.
+There is one confirmed current upstream match: TruffleRuby FFI struct-by-value support (`#3835`). The validation pass also confirmed and filed one current issue: `FFI::DynamicLibrary.open` raises `RuntimeError` instead of `LoadError` for a missing shared library on supported TruffleRuby versions available locally (`#4345`). The bundled-gems TypeError and Appraisal2 skips did not reproduce as active issues in the supported versions tested.
