@@ -1,8 +1,5 @@
 # truffle-repros
 
-Review-only TruffleRuby repro workspace. Do not publish upstream issues from
-these files without a separate review pass.
-
 Run the available supported-version matrix:
 
 ```bash
