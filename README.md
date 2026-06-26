@@ -21,8 +21,8 @@ Mini-projects:
 
 - `ffi-missing-library/`: missing shared library exception class: https://github.com/truffleruby/truffleruby/issues/4345
 - `ffi-struct-by-value/`: known FFI struct-by-value limitation: https://github.com/truffleruby/truffleruby/issues/3835
-- `bundled-gems-file-path-nil/`: bundled-gems `File.path(nil)` require probe.
-- `appraisal2-dsl-generation/`: Appraisal2 Bundler DSL generation skip.
-- `appraisal2-bundler-lock/`: Appraisal2 locked Bundler version skip.
+- `bundled-gems-file-path-nil/`: bundled-gems `File.path(nil)` require probe: only affects EOL-truffles
+- `appraisal2-dsl-generation/`: Appraisal2 Bundler DSL generation skip: only affects EOL-truffles
+- `appraisal2-bundler-lock/`: Appraisal2 locked Bundler version skip: only affects EOL-truffles
 
 See [status.md](status.md) for classifications and latest validated results.
