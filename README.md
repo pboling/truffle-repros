@@ -25,4 +25,4 @@ Mini-projects:
 - `appraisal2-dsl-generation/`: Appraisal2 Bundler DSL generation skip.
 - `appraisal2-bundler-lock/`: Appraisal2 locked Bundler version skip.
 
-See `status.md` for classifications and latest validated results.
+See [status.md](status.md) for classifications and latest validated results.
