@@ -1,6 +1,7 @@
 # TruffleRuby workaround catalogue
 
-Prepared for review only. No upstream issues were filed.
+Prepared for review. One upstream issue has been filed from the validation pass:
+`truffleruby/truffleruby#4345`.
 
 ## Scope and filters
 
@@ -173,13 +174,13 @@ For reporting, I treated issues affecting TruffleRuby on Ruby `3.3`, `3.4`, or `
 - Reporting recommendation: do not file from comments alone. If `tree_stump` install/use fails on supported TruffleRuby, collect a minimal install/runtime repro and compare against #3396 before deciding whether to file a new Magnus/rb-sys issue.
 - Priority: low until reproduced.
 
-## Recommended reporting queue
+## Reporting queue after validation
 
-1. No duplicate filing for FFI struct-by-value. Track or comment on `truffleruby/truffleruby#3835` if `tree_haver` evidence would be useful.
-2. Reproduce `tree_haver` bundled-gems `TypeError` on TruffleRuby `33.0`, `34.0`, `40.0`, or `dev`. File a new issue if it still occurs.
-3. Reproduce `tree_haver` FFI missing shared-library exception class on supported TruffleRuby. File only if the exception originates in TruffleRuby/its FFI behavior rather than the `ffi` gem.
-4. Run the three broad `appraisal2` Bundler DSL skips on supported TruffleRuby and classify the concrete failures before reporting.
-5. Run the Appraisal2 lockfile/Bundler-version acceptance spec on supported TruffleRuby and determine whether it is expected packaging policy or a compatibility bug.
+1. Filed `truffleruby/truffleruby#4345` for the direct `FFI::DynamicLibrary.open` missing-library exception class mismatch.
+2. No duplicate filing for FFI struct-by-value. Track or comment on `truffleruby/truffleruby#3835` if `tree_haver` evidence would be useful.
+3. Do not file for the bundled-gems `File.path(nil)` note from current evidence. Normal parser-gem requires did not reproduce the TypeError on supported TruffleRuby versions tested.
+4. Do not file for the Appraisal2 Bundler DSL generation skips from current evidence. The isolated generation repro passes on supported TruffleRuby versions tested.
+5. Do not file for the Appraisal2 lockfile/Bundler-version skip from current evidence. The isolated install repro preserved the locked Bundler version on supported TruffleRuby versions tested.
 6. Do not report the `stone_checksums` and `kettle-dev` Ruby `3.1..3.2` skips unless they reproduce on Ruby `3.3+` compatibility.
 
 ## Validation pass 2026-06-26
@@ -201,6 +202,18 @@ Repros and results:
 - `bundled-gems-file-path-nil/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. Normal `require "citrus"` and `require "parslet"` succeed. A direct internal probe of `Gem::BUNDLED_GEMS.warning?(nil)` raises `TypeError` on both TruffleRuby and CRuby, so that direct call is context only and not a reportable normal-require failure.
 - `appraisal2-dsl-generation/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. The skipped Bundler DSL generation shape matches expected output; CRuby 3.4.8 control also passes.
 - `appraisal2-bundler-lock/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. The repro installs and preserves a decremented locked Bundler version (`4.0.4` from `4.0.5` on 33.0.1; `2.6.8` from `2.6.9` on 34.0.0).
+
+Additional findings from the repro attempts:
+
+- The `ffi-missing-library/` repro was narrowed after checking `ffi_lib` directly. On TruffleRuby 34.0.0, `ffi_lib "/no/such/libmissing.so"` raises `LoadError`, matching CRuby/ffi behavior. The remaining mismatch is specifically direct use of `FFI::DynamicLibrary.open`, which raises `RuntimeError` on TruffleRuby.
+- GitHub issue search with `gh` found related but not duplicate issues:
+    - `#1926` shows a missing `ffi_lib` library path surfacing as `LoadError`, which supports the narrower direct-API framing for `#4345`.
+    - `#1750` contains older debug output where TruffleRuby internally raised `RuntimeError` while probing FFI libraries and later surfaced `LoadError` through `ffi_lib`.
+    - `#2769` and `#4044` involve shared-library/linking failures but not the direct `FFI::DynamicLibrary.open` exception-class contract.
+- The `bundled-gems-file-path-nil/` repro found that `Gem::BUNDLED_GEMS.warning?(nil)` raises `TypeError` as an internal direct-call probe on both TruffleRuby and CRuby. That means the direct nil probe is not itself a TruffleRuby compatibility bug; only a normal `require` raising this TypeError would be actionable, and that did not reproduce with `citrus` or `parslet`.
+- The first `appraisal2-dsl-generation/` attempt produced a mismatch because the simplified fixture used the wrong `install_if` shape. After matching the skipped spec's quoted `install_if '"-> { true }"'` form, TruffleRuby 34.0.0 and CRuby 3.4.8 both produced the expected generated Gemfile.
+- The first full-matrix `appraisal2-bundler-lock/` run on TruffleRuby 33.0.1 produced a false negative because the checker expected exact `BUNDLED WITH` indentation. After changing the checker to use a whitespace-tolerant regex, TruffleRuby 33.0.1 passed and preserved Bundler `4.0.4`; TruffleRuby 34.0.0 passed and preserved Bundler `2.6.8`.
+- The full `./run_all.sh` matrix exits nonzero by design while `ffi-missing-library/` and `ffi-struct-by-value/` classify active issues. Passing repros print `PASS no active issue`.
 
 Current validated classification:
 
