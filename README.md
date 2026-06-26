@@ -19,8 +19,8 @@ local `mise`/`ruby-build` plugin at the time of setup.
 
 Mini-projects:
 
-- `ffi-missing-library/`: missing shared library exception class.
-- `ffi-struct-by-value/`: known FFI struct-by-value limitation.
+- `ffi-missing-library/`: missing shared library exception class: https://github.com/truffleruby/truffleruby/issues/4345
+- `ffi-struct-by-value/`: known FFI struct-by-value limitation: https://github.com/truffleruby/truffleruby/issues/3835
 - `bundled-gems-file-path-nil/`: bundled-gems `File.path(nil)` require probe.
 - `appraisal2-dsl-generation/`: Appraisal2 Bundler DSL generation skip.
 - `appraisal2-bundler-lock/`: Appraisal2 locked Bundler version skip.
