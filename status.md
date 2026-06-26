@@ -182,6 +182,33 @@ For reporting, I treated issues affecting TruffleRuby on Ruby `3.3`, `3.4`, or `
 5. Run the Appraisal2 lockfile/Bundler-version acceptance spec on supported TruffleRuby and determine whether it is expected packaging policy or a compatibility bug.
 6. Do not report the `stone_checksums` and `kettle-dev` Ruby `3.1..3.2` skips unless they reproduce on Ruby `3.3+` compatibility.
 
+## Validation pass 2026-06-26
+
+Local mini-project repros were added under this repository. They are intentionally
+review-only and do not publish upstream issues.
+
+Validated interpreters:
+
+- `truffleruby+graalvm-33.0.1`: `truffleruby 33.0.1 (2026-01-20), like ruby 3.3.7`
+- `truffleruby+graalvm-34.0.0`: `truffleruby 34.0.0 (2026-04-10), like ruby 3.4.9`
+- CRuby control: `ruby 3.4.8`
+- Attempted `truffleruby+graalvm-40.0.0`, but the local `mise`/`ruby-build` plugin did not know that version.
+
+Repros and results:
+
+- `ffi-missing-library/`: current issue on TruffleRuby 33.0.1 and 34.0.0. `FFI::DynamicLibrary.open` on a missing `.so` raises `RuntimeError`, while the CRuby 3.4.8 control raises `LoadError`.
+- `ffi-struct-by-value/`: known current issue on TruffleRuby 33.0.1 and 34.0.0. Attaching a tiny C function returning a struct by value fails with `Polyglot::ForeignException: unknown simple type 'STRUCT_BY_VALUE'`. CRuby 3.4.8 returns the expected struct values. This remains a duplicate/evidence item for upstream `#3835`, not a new issue.
+- `bundled-gems-file-path-nil/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. Normal `require "citrus"` and `require "parslet"` succeed. A direct internal probe of `Gem::BUNDLED_GEMS.warning?(nil)` raises `TypeError` on both TruffleRuby and CRuby, so that direct call is context only and not a reportable normal-require failure.
+- `appraisal2-dsl-generation/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. The skipped Bundler DSL generation shape matches expected output; CRuby 3.4.8 control also passes.
+- `appraisal2-bundler-lock/`: not reproduced as an active issue on TruffleRuby 33.0.1 or 34.0.0. The repro installs and preserves a decremented locked Bundler version (`4.0.4` from `4.0.5` on 33.0.1; `2.6.8` from `2.6.9` on 34.0.0).
+
+Current validated classification:
+
+- Current issue candidate for a new report: FFI missing shared-library exception shape (`RuntimeError` vs `LoadError`).
+- Current known duplicate/evidence only: FFI struct-by-value (`STRUCT_BY_VALUE`, upstream `#3835`).
+- Not active in validated supported versions: bundled-gems normal require TypeError, Appraisal2 DSL generation skip, Appraisal2 Bundler lock skip.
+- Still not revisited: EOL-only `stone_checksums` and `kettle-dev` skips, plus native extension capability exclusions that were comments/policy rather than concrete failures.
+
 ## Current conclusion
 
-There is one confirmed current upstream match: TruffleRuby FFI struct-by-value support (`#3835`). The rest are either EOL-only skips, broad all-TruffleRuby skips that need fresh supported-version repros, or production defensive branches that need minimal scripts before filing. No new upstream issue should be filed from the current evidence alone.
+There is one confirmed current upstream match: TruffleRuby FFI struct-by-value support (`#3835`). The validation pass also confirms one current issue candidate for review before filing: `FFI::DynamicLibrary.open` raises `RuntimeError` instead of `LoadError` for a missing shared library on supported TruffleRuby versions available locally. The bundled-gems TypeError and Appraisal2 skips did not reproduce as active issues in the supported versions tested.

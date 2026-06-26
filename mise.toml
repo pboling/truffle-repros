@@ -1,0 +1,6 @@
+[tools]
+ruby = "truffleruby+graalvm-34.0.0"
+
+[env]
+BUNDLE_IGNORE_FUNDING_REQUESTS = "true"
+BUNDLE_SILENCE_ROOT_WARNING = "true"

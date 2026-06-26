@@ -1,1 +1,28 @@
 # truffle-repros
+
+Review-only TruffleRuby repro workspace. Do not publish upstream issues from
+these files without a separate review pass.
+
+Run the available supported-version matrix:
+
+```bash
+./run_all.sh
+```
+
+The runner currently uses:
+
+- `truffleruby+graalvm-33.0.1`
+- `truffleruby+graalvm-34.0.0`
+
+`truffleruby+graalvm-40.0.0` was attempted but was not available through the
+local `mise`/`ruby-build` plugin at the time of setup.
+
+Mini-projects:
+
+- `ffi-missing-library/`: missing shared library exception class.
+- `ffi-struct-by-value/`: known FFI struct-by-value limitation.
+- `bundled-gems-file-path-nil/`: bundled-gems `File.path(nil)` require probe.
+- `appraisal2-dsl-generation/`: Appraisal2 Bundler DSL generation skip.
+- `appraisal2-bundler-lock/`: Appraisal2 locked Bundler version skip.
+
+See `status.md` for classifications and latest validated results.
