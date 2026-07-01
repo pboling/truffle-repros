@@ -28,3 +28,6 @@ Validated locally on 2026-07-01:
 GitHub issue search found older closed issues with the same generic Java
 message, including `truffleruby/truffleruby#3447`, but no open or closed issue
 matching the Bundler/ENV call path.
+
+Filed upstream as `truffleruby/truffleruby#4352`:
+https://github.com/truffleruby/truffleruby/issues/4352

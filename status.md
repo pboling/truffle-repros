@@ -261,9 +261,10 @@ Issue search:
 
 Current classification:
 
-- Current unreported issue candidate: concurrent `Bundler.with_unbundled_env`
+- Current filed issue: concurrent `Bundler.with_unbundled_env`
   can crash TruffleRuby 33.0.1 and 34.0.0 with an internal
-  `Null receiver values are not supported by libraries` JVM error.
+  `Null receiver values are not supported by libraries` JVM error. Filed as
+  `truffleruby/truffleruby#4352`: https://github.com/truffleruby/truffleruby/issues/4352
 - Local mitigation remains appropriate in `kettle-family`: avoid parallel family
   release worker threads on TruffleRuby until upstream behavior is fixed or the
   release runner no longer shares process-wide Bundler environment mutation
