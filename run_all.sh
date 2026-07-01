@@ -11,6 +11,7 @@ REPROS=(
   "ffi-missing-library"
   "ffi-struct-by-value"
   "bundled-gems-file-path-nil"
+  "bundler-unbundled-env-thread"
   "appraisal2-dsl-generation"
   "appraisal2-bundler-lock"
 )

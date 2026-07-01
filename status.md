@@ -225,3 +225,46 @@ Current validated classification:
 ## Current conclusion
 
 There is one confirmed current upstream match: TruffleRuby FFI struct-by-value support (`#3835`). The validation pass also confirmed and filed one current issue: `FFI::DynamicLibrary.open` raises `RuntimeError` instead of `LoadError` for a missing shared library on supported TruffleRuby versions available locally (`#4345`). The bundled-gems TypeError and Appraisal2 skips did not reproduce as active issues in the supported versions tested.
+
+## Validation pass 2026-07-01
+
+Added `bundler-unbundled-env-thread/` for the parallel `kettle-family release`
+failure shape. The minimized repro concurrently calls
+`Bundler.with_unbundled_env` from four Ruby threads while Bundler environment
+variables are present, then yields with `Thread.pass`.
+
+Validated interpreters:
+
+- CRuby control: `ruby 3.4.8`
+- `truffleruby+graalvm-33.0.1`: `truffleruby 33.0.1`, Ruby 3.3-compatible line
+- `truffleruby+graalvm-34.0.0`: `truffleruby 34.0.0`, Ruby 3.4-compatible line
+
+Results:
+
+- CRuby 3.4.8 passes with `REPRO_THREADS=4 REPRO_ITERATIONS=200`.
+- TruffleRuby 33.0.1 fails with an internal JVM error:
+  `Null receiver values are not supported by libraries`.
+- TruffleRuby 34.0.0 fails with the same internal JVM error.
+- The failing stack goes through `Bundler.with_unbundled_env`,
+  `Bundler.with_env`, TruffleRuby `core/env.rb`, and array deletion during
+  environment replacement.
+
+Issue search:
+
+- No open or closed `truffleruby/truffleruby` issue was found for
+  `Bundler.with_unbundled_env`, `core/env.rb` plus `with_unbundled_env`, or
+  `ENV.replace` plus threads.
+- Exact-message search found older closed issues with the same generic Java
+  exception text. The closest is
+  `#3447 Java exceptions from CompactHashStore`, but it describes non-thread-safe
+  hash internals rather than Bundler environment replacement.
+
+Current classification:
+
+- Current unreported issue candidate: concurrent `Bundler.with_unbundled_env`
+  can crash TruffleRuby 33.0.1 and 34.0.0 with an internal
+  `Null receiver values are not supported by libraries` JVM error.
+- Local mitigation remains appropriate in `kettle-family`: avoid parallel family
+  release worker threads on TruffleRuby until upstream behavior is fixed or the
+  release runner no longer shares process-wide Bundler environment mutation
+  across threads.
